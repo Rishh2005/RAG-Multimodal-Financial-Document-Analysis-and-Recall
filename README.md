@@ -1,17 +1,66 @@
 # RAG-Multimodal-Financial-Document-Analysis-and-Recall
 
+## 🔍 Context & Motivation
+
+Large financial documents such as earnings reports, investor presentations, and regulatory filings are inherently **multimodal**. 
+Critical information is distributed across **narrative text, tables, and visual elements such as charts and graphs**. 
+
+While Retrieval-Augmented Generation (RAG) has become a standard approach for grounding large language models in external documents, **most RAG pipelines operate on text alone**. In practice, this leads to incomplete or misleading answers when key insights are encoded visually—for example, trends, growth patterns, or anomalies shown only in charts.
+
+This repository explores a **practical multimodal RAG pipeline** for financial document analysis, where **visual information is explicitly extracted, described, and incorporated into retrieval** alongside textual content.
+
+
+
+## 🎯 What This Repository Demonstrates
+
+This project demonstrates an end-to-end workflow for:
+
+- Parsing financial PDF documents into structured components (text, tables, and figures)
+- Using a vision-capable LLM to **describe charts and visual trends**
+- Storing both textual and visual-derived representations in a vector database
+- Enabling a RAG-based chatbot to answer questions that require **visual grounding**, not just text matching
+
+The core hypothesis explored here is that **augmenting retrieval with graph and chart descriptions materially improves answer quality** for financial queries that depend on trends or comparative patterns.
+
+
+## 🧭 Scope & Design Philosophy
+
+This repository is intentionally designed as a **clear, inspectable reference implementation**, rather than a production-ready framework or benchmark.
+
+Design choices prioritize:
+- Transparency over architectural complexity
+- Readability over optimization
+- Practical reproducibility over exhaustive evaluation
+
+While the example focuses on a small number of financial PDF documents, the techniques illustrated here generalize to other document-heavy domains where visual elements carry semantic meaning.
+
+
+## ⚠️ Limitations & Intended Use
+
+This project should be viewed as:
+- A **demonstration** of multimodal RAG concepts
+- A **starting point** for further experimentation or system design
+
+It is not intended to:
+- Serve as a comprehensive benchmark
+- Claim state-of-the-art performance
+- Replace domain-specific financial analysis tools
+
+Evaluation in this repository is qualitative and illustrative; users interested in rigorous benchmarking are encouraged to adapt the pipeline to standardized datasets and metrics.
+
+---
 
 we will explore the application of the Retrieval-augmented Generation (RAG) method in processing a company's financial information contained within a PDF document. The process includes extracting critical data from a PDF file (like text, tables, graphs, etc.) and saving them in a vector store database such as Deep Lake for quick and efficient retrieval. Next, a RAG-enabled bot can access stored information to respond to end-user queries.
 
-This task requires diverse tools, including [Unstructured.io](http://unstructures.io/) for text/table extraction, OpenAI's GPT-4V for extracting information from graphs, and LlamaIndex for developing a bot with retrieval capabilities. As previously mentioned, data preprocessing plays a significant role in the RAG process. So, we start by pulling data from a PDF document. The content of this lesson focuses on demonstrating how to extract data from a single PDF document for ease of understanding. Nevertheless, the accompanying notebook provided after the lesson will analyze three separate reports, offering a broader scope of information.
+This task requires diverse tools, including [Unstructured.io](http://unstructures.io/) for text/table extraction, OpenAI's GPT-4V for extracting information from graphs, and LlamaIndex for developing a bot with retrieval capabilities. As previously mentioned, data preprocessing plays a significant role in the RAG process. So, we start by pulling data from a PDF document. The content of this repo focuses on demonstrating how to extract data from a single PDF document for ease of understanding. Nevertheless, the accompanying notebook provided after the repo will analyze three separate reports, offering a broader scope of information.
 
 ## Extracting Data
-Extracting textual data is relatively straightforward, but processing graphical elements such as line or bar charts can be more challenging. The latest OpenAI model equipped with vision processing, GPT-4V, is valuable for visual elements. We can feed the slides to the model and ask it to describe it in detail, which then will be used to complement the textual information. This lesson uses Tesla's [Q3 financial report](https://digitalassets.tesla.com/tesla-contents/image/upload/IR/TSLA-Q3-2023-Update-3.pdf) as the source document. It is possible to download the document using the wget command.
+Extracting textual data is relatively straightforward, but processing graphical elements such as line or bar charts can be more challenging. The latest OpenAI model equipped with vision processing, GPT-4V, is valuable for visual elements. We can feed the slides to the model and ask it to describe it in detail, which then will be used to complement the textual information. This repo uses Tesla's [Q3 financial report](https://digitalassets.tesla.com/tesla-contents/image/upload/IR/TSLA-Q3-2023-Update-3.pdf) as the source document. It is possible to download the document using the wget command.
 
 ```
 wget https://digitalassets.tesla.com/tesla-contents/image/upload/IR/TSLA-Q3-2023-Update-3.pdf
 ```
-The preprocessing tasks outlined in the next section might be time-consuming and necessitate API calls to OpenAI endpoints, which come with associated costs. To mitigate this, we have made the preprocessed dataset and the checkpoints of the output of each section available at the end of this lesson, allowing you to utilize them with the provided notebook.
+The preprocessing tasks outlined in the next section might be time-consuming and necessitate API calls to OpenAI endpoints, which come with associated costs. To mitigate this, we have made the preprocessed dataset and the checkpoints of the output of each section available at the end of this repo, allowing you to utilize them with the provided notebook.
 
 ## 1. Text/Tables
 The unstructured package is an effective tool for extracting information from PDF files. It requires two tools, popplerand tesseract, that help render PDF documents. We suggest setting up these packages on Google Colab, freely available for students to execute and experiment with code. We will briefly mention the installation of these packages on other operating systems. Let's install the utilities and their dependencies using the following commands.
@@ -280,7 +329,7 @@ The dataset has already been created and is hosted under the GenAI360 organizati
 As Step 0, please note that Deep Memory is a premium feature in Activeloop <b>paid plans</b>.
 
 ## Activate Deep Memory
-The Deep Memory feature from Activeloop enhances the retriever's accuracy. This improvement allows the model to access higher-quality data, leading to more detailed and informative responses. In earlier lessons, we already covered the basics of Deep Memory, so we will not dive into more details. The process begins by fetching chunks of data from the cloud and using GPT-3.5 to create specific questions for each chunk. These generated questions are then utilized in the Deep Memory training procedure to enhance the embedding quality. In our experience, this approach led to a 25% enhancement in performance.
+The Deep Memory feature from Activeloop enhances the retriever's accuracy. This improvement allows the model to access higher-quality data, leading to more detailed and informative responses. In earlier repos, we already covered the basics of Deep Memory, so we will not dive into more details. The process begins by fetching chunks of data from the cloud and using GPT-3.5 to create specific questions for each chunk. These generated questions are then utilized in the Deep Memory training procedure to enhance the embedding quality. In our experience, this approach led to a 25% enhancement in performance.
 
 Activeloop recommends using a dataset containing a minimum of 100 chunks, ensuring sufficient context for the model to enhance the embedding space effectively. So, the codes in this section are based on three PDF documents. For the complete code and execution steps to process three documents instead of one, please refer to the accompanying notebook.
 The processed dataset is available in the cloud on the GenAI360 organization. You can access using the following key: hub://genai360/tesla_quarterly_2023.
@@ -470,5 +519,6 @@ In quarter 3, there was a decrease in Model S/X deliveries compared to the previ
 ```
 
 You'll observe that the chatbot points to incorrect text segments. Despite the answer being contextually similar, it doesn't provide the correct answer. The graph shows an upward trend, a detail that might not have been mentioned in the report's text.
+
 
 
